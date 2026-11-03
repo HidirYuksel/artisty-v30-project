@@ -1,0 +1,233 @@
+
+:root{--line:rgba(255,255,255,.16);--dim:rgba(255,255,255,.55)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;background:#000;overflow:hidden}
+body{display:flex;font-family:Arial,Helvetica,sans-serif;color:#fff}
+button,input,select{font:inherit;color:inherit}
+
+/* ===== SİTE ===== */
+#site{flex:1;min-width:0;height:100vh;overflow-y:auto;overflow-x:hidden;container-type:inline-size;position:relative;background:var(--v-bg);color:var(--v-tc);font-family:var(--v-font);font-weight:var(--v-fx-wt);-webkit-font-smoothing:antialiased}
+#page{position:relative;width:100%;background:var(--v-bg);overflow:hidden}
+
+/* ışık süzmesi: en alt katman; yalnızca video alanındayken belirir. Video paneli (canvas) üstünde, PLAY imleci en üstte */
+#glow{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+#glow i{position:absolute;left:0;top:0;will-change:transform;opacity:0;transition:opacity var(--gl-out,.5s) ease}
+#glow.on i{opacity:1;transition:opacity var(--gl-in,.5s) cubic-bezier(.22,.61,.36,1)}
+body.fsopen #glow{display:none}
+
+header{position:absolute;left:0;top:0;width:100%;height:var(--v-ly-top);z-index:5;pointer-events:none}
+header>*{pointer-events:auto}
+.logo{position:absolute;left:var(--v-lg-x);top:var(--v-lg-y);width:var(--v-lg-w);display:block;line-height:0}
+.logo svg{width:100%;height:auto;display:block}
+.logo svg path{fill:var(--v-lg-c)}
+nav{position:absolute;right:var(--nv-r-eff,calc(var(--v-ly-peek) + var(--v-ly-col) + var(--v-nv-r)));top:var(--v-nv-t);display:flex;gap:var(--v-nv-gap)}
+
+.fx{display:block;color:var(--v-tc);text-decoration:none;font-size:max(11px,var(--v-tx-fs));line-height:1.2;letter-spacing:var(--v-tx-ls);white-space:pre;cursor:pointer;user-select:none;-webkit-user-select:none}
+.fx:focus-visible{outline:1px solid currentColor;outline-offset:4px}
+.fx span{display:inline-block}
+.fx[hidden]{display:none}
+.fx.so{color:var(--v-so-c)}
+/* Directors / Works / Team / About: tek ortak tipografi (boyut, harf aralığı, font) */
+.fx.tm{font-size:max(11px,var(--v-tm-fs));font-family:var(--v-tm-font)}
+
+/* video bandı */
+#stage{position:relative;z-index:2;margin-top:var(--v-ly-top);height:calc((100cqw - 2*(var(--v-ly-peek) + var(--v-ly-col)))/var(--v-ly-aspect));background:transparent}
+#cv{position:absolute;inset:0;width:100%;height:100%;display:block}
+/* Vimeo katmanı: durağan hâlde canvas'ın üstünde, fareyi geçirir */
+#vwrap{position:absolute;top:0;bottom:0;left:calc(var(--v-ly-peek) + var(--v-ly-col));right:calc(var(--v-ly-peek) + var(--v-ly-col));z-index:2;overflow:hidden;pointer-events:none;opacity:0;background:#000;transition:opacity .25s ease}
+#vwrap.on{opacity:1;transition:opacity .6s ease}
+#vwrap iframe{position:absolute;border:0;left:0;top:0;width:100%;height:100%}
+#capt span{display:inline-block}
+
+/* ===== TAM EKRAN VİDEO (Play'e tıklayınca) =====
+   #fs, header ve yazıların ALTINDA kalır: logo/menü/ABOUT/SEARCH/CONTACT olduğu gibi üstte durur. */
+#fs{position:absolute;left:0;top:0;width:100%;height:var(--fsH,100vh);z-index:1;pointer-events:none;display:none}
+body.fsopen #fs{display:block}
+body.fsopen #fsc{display:flex}
+#fsclip{position:absolute;inset:0;overflow:hidden;background:#000;transition:clip-path var(--fsdur,.9s) cubic-bezier(.65,0,.35,1)}
+#fsv{position:absolute;inset:0;transform-origin:50% 50%;transition:transform var(--fsdur,.9s) cubic-bezier(.65,0,.35,1)}
+#fsp{position:absolute;inset:0;background-size:cover;background-position:center}
+#fsv iframe,#fsv video{position:absolute;border:0;opacity:0;transition:opacity .6s ease}
+#fsv video{inset:0;width:100%;height:100%;object-fit:cover}
+#fsv .rdy{opacity:1}
+#fsc{z-index:6;display:none;position:absolute;left:var(--v-fs-l);right:var(--v-fs-r);top:calc(var(--fsH,100vh) - var(--v-fs-b) - var(--fs-bs));height:var(--fs-bs);display:flex;align-items:center;gap:var(--v-fs-gap);opacity:0;transition:opacity .5s ease .2s}
+#fsc.open{opacity:1}
+#fsc.open>*{pointer-events:auto}
+#fsc button{flex:none;width:var(--fs-bs);height:var(--fs-bs);background:none;border:0;padding:0;display:block;line-height:0}
+#fsc button svg{width:100%;height:100%;display:block}
+#fsBar{position:relative;flex:1;height:var(--fs-bh);border:1px solid #fff;cursor:pointer}
+#fsBar::before{content:"";position:absolute;left:0;right:0;top:-10px;bottom:-10px}
+#fsBar i{position:absolute;left:-1px;top:-1px;bottom:-1px;width:0;background:#0f0;pointer-events:none}
+body.fsopen #cv,body.fsopen #vwrap{opacity:0!important}
+body.fsopen #stage,body.fsopen .col{background:transparent}
+body.fsopen #vhit{pointer-events:none}
+body.fsopen #site{overflow:hidden}
+.fx.ct{transition:transform var(--fsdur,.9s) cubic-bezier(.65,0,.35,1)}
+#burst{position:absolute;left:0;top:0;width:100%;height:var(--fsH,100vh);z-index:7;pointer-events:none}
+#vhit{position:absolute;top:0;bottom:0;left:calc(var(--v-ly-peek) + var(--v-ly-col));right:calc(var(--v-ly-peek) + var(--v-ly-col));z-index:3}
+#cap{position:absolute;inset:0;display:flex;padding:var(--v-cp-pad);align-items:var(--v-cp-va);justify-content:var(--v-cp-ha);pointer-events:none}
+#capt{font-size:max(11px,var(--v-cp-fs));color:var(--v-cp-c);font-weight:var(--v-cp-wt);line-height:1;white-space:pre-wrap;transform:translate(var(--v-cp-x),var(--v-cp-y));letter-spacing:var(--v-cp-ls);text-box:trim-both cap alphabetic}
+/* text-box desteklemeyen tarayıcılarda (Firefox) harf altındaki boşluğu elle kapat */
+@supports not (text-box:trim-both cap alphabetic){#capt{transform:translate(var(--v-cp-x),calc(var(--v-cp-y) + .2em))}}
+
+/* özel imleç: video dışında daire, video alanında PLAY */
+body.cu #site,body.cu #site *{cursor:none!important}
+#cur{position:fixed;left:0;top:0;z-index:50;pointer-events:none;opacity:0;transition:opacity .2s;will-change:transform}
+#cur.on{opacity:1}
+#cur svg{position:absolute;left:0;top:0;height:auto;display:block;overflow:visible;opacity:0;transform:translate(-50%,-50%) scale(.6);transition:opacity .22s ease,transform .3s cubic-bezier(.22,.61,.36,1)}
+#cuC{width:var(--cu-c);aspect-ratio:1}
+#cuP{width:var(--cu-p);aspect-ratio:68/34}
+#cur #cuX{width:var(--cu-x);height:calc(var(--cu-x)/var(--cu-xr,1))}
+#cur:not(.play):not(.xo) #cuC,#cur.play:not(.xo) #cuP,#cur.xo #cuX{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.col{position:absolute;top:0;bottom:0;width:var(--v-ly-col);background:transparent;z-index:4}
+#colL{left:var(--v-ly-peek)}
+#colR{right:var(--v-ly-peek)}
+.side{position:absolute;left:50%;writing-mode:vertical-rl}
+
+/* video altı */
+#below{position:relative;z-index:2;height:var(--v-bl-h)}
+.fx.ct{position:absolute;left:calc(var(--v-ly-peek) + var(--v-ly-col));top:2.1cqw}
+#ctl{position:absolute;right:calc(var(--v-ly-peek) + var(--v-ly-col));top:2.1cqw;display:flex;gap:.8cqw;align-items:center;font-size:max(11px,var(--v-tx-fs));line-height:1.2;letter-spacing:var(--v-tx-ls)}
+#ctl button{background:none;border:0;cursor:pointer;padding:0 .2em}
+#ctl .n{opacity:.55;font-variant-numeric:tabular-nums}
+
+/* footer */
+#foot{position:relative;z-index:2;padding-bottom:var(--ft-b,3.8cqw)}
+/* logo: sağ = sol = alt boşluk (varsayılan: SEARCH'ün alt boşluğuyla aynı) */
+#giantwrap{position:relative;margin:var(--v-ft-mt) var(--ft-m,3.8cqw) 0;width:auto}
+#giant{position:relative;z-index:1;display:block;width:100%;height:auto;overflow:visible}
+#giant .gp{fill:var(--v-ft-c)}
+/* "O" harfinin arkasındaki mavi ışık: normalde görünmez, O'ya gelince yavaşça belirir.
+   Işığın taban elipsinin merkezi (49.836% / 79.076%) logodaki O'nun merkezine (30.2335% / 49.934%) oturtulur. */
+#olight{position:absolute;z-index:0;left:calc(30.2335% + var(--v-ol-x));top:calc(49.934% + var(--v-ol-y));width:28.2028%;height:auto;overflow:visible;pointer-events:none;opacity:0;
+ transform-origin:49.836% 79.076%;transform:translate(-49.836%,-79.076%) scale(var(--v-ol-s),calc(var(--v-ol-s)*var(--v-ol-sy)));
+ transition:opacity var(--v-ol-out) ease}
+#olight path{opacity:min(1,calc(.41*var(--v-ol-g)))}
+#giantwrap.pin #olight,#giantwrap.on:not(.off) #olight{opacity:1;transition:opacity var(--v-ol-in) cubic-bezier(.22,.61,.36,1)}
+/* sosyal linkler: logonun sağ üstünde, logonun sağ kenarına hizalı */
+#social{position:absolute;right:0;bottom:calc(100% + var(--v-ft-sm));display:flex;gap:var(--v-ft-sg);z-index:3}
+/* DESIGNED BY: logonun sağ altında, küçük punto */
+#designed{position:absolute;right:0;top:calc(100% + var(--v-ft-dg));font-size:max(7px,var(--v-ft-ds));letter-spacing:var(--v-ft-dls);color:var(--v-ft-dc);white-space:pre;line-height:1.2;text-align:right;z-index:3;user-select:none}
+
+/* ===== SAYFA GEÇİŞİ (Home ⇄ Works): imleç geçişleriyle aynı easing ===== */
+.vsec{transition:opacity var(--v-wk-vdur) cubic-bezier(.22,.61,.36,1),transform var(--v-wk-vdur) cubic-bezier(.22,.61,.36,1)}
+.vsec.hide{opacity:0;transform:translateY(1.2cqw);pointer-events:none}
+.vsec.off{display:none}
+
+/* ===== WORKS SAYFASI: ikili grid, pencereler "cover" ile dolar ===== */
+#works{position:relative;z-index:2}
+#wmain{position:relative;margin-top:var(--v-wk-top)}
+#wgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--v-wk-gx);row-gap:var(--v-wk-gy);margin:0 var(--v-wk-mx)}
+.wc{position:relative;aspect-ratio:var(--v-wk-aspect);overflow:hidden;contain:paint}
+.wc:not(.bend){background:#0b0b0b}
+.wc.empty:not(.bend){background:#141414}
+/* Hover: pencere Home'daki geçiş efektiyle perspektif / bükülme alır (canvas), görsel gizlenir */
+.wc canvas{position:absolute;inset:0;width:100%;height:100%;display:none;pointer-events:none;will-change:contents}
+.wc.bend canvas{display:block}
+.wc.bend img{opacity:0}
+/* Proje bilgisi: bükülme sırasında belirir. Metin ve ok aynı satırda; ok yüksekliği = büyük harf (cap) yüksekliği */
+.wi{position:absolute;left:var(--v-wk-ipx);right:var(--v-wk-ipx);top:var(--v-wk-iy);transform:translateY(-50%);display:flex;align-items:center;gap:var(--v-wk-igap);
+ font-family:var(--v-wk-ifont);font-weight:var(--v-wk-iwt);font-size:max(9px,var(--v-wk-isz));letter-spacing:var(--v-wk-ils);line-height:1;color:var(--v-wk-ic);
+ opacity:0;pointer-events:none;transition:opacity var(--v-wk-iout) ease}
+.wc.bend.info .wi{opacity:1;transition:opacity var(--v-wk-iin) cubic-bezier(.22,.61,.36,1) var(--v-wk-idel)}
+.wi.up .wt{text-transform:uppercase}
+.wi .wt{display:block;white-space:pre-wrap;text-box:trim-both cap alphabetic}
+.wi.far .wt{flex:1;min-width:0}
+.wi svg{flex:none;display:block;height:var(--v-wk-icap);width:var(--v-wk-icap);overflow:visible}
+.wi svg path{stroke:currentColor}
+.wc img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:var(--v-wk-fx) var(--v-wk-fy);display:block;user-select:none;-webkit-user-drag:none}
+/* ===== PIN KATMANI: #site'ın ilk çocuğu, 0 yükseklikli sticky katman (z-index en üstte).
+   #page overflow:hidden olduğu için sticky burada, #page'in DIŞINDA olmak zorunda. ===== */
+#pin{position:sticky;top:0;height:0;z-index:30;pointer-events:none}
+/* ABOUT / SEARCH: Home'daki video bandıyla aynı yükseklikte, grid kenarlarında sabit */
+/* ABOUT: video bandının yanındaki sağ sütunda (Home) / grid kenarında (Works) */
+.pcol{position:absolute;top:var(--v-ly-top);height:calc((100cqw - 2*(var(--v-ly-peek) + var(--v-ly-col)))/var(--v-ly-aspect));width:var(--v-ly-col);z-index:4}
+#pcolL{left:var(--v-ly-peek)}
+/* ABOUT: Home ve Works'te aynı yerde; CONTACT sütununun sağdaki simetriği (sağdan lb.x, sütun genişliği lb.cw) */
+#pcolR{right:var(--v-lb-x);width:var(--v-lb-cw)}
+/* SOL ALT (Home ve Works'te AYNI): görünüm penceresinin altına pinli.
+   SEARCH (yatay): alt boşluğu --lb-b (JS: Team'in üst boşluğuyla birebir eşitlenir). CONTACT (dikey): ilk harfi C'nin görünen alt başlangıcı, video penceresinin alt kenarıyla aynı çizgide (Home ve Works'te aynı, --ct-lsb ile C'nin sol yan boşluğu telafi edilir). */
+/* TOGGLE (sağ alt, pin): sağ kenar = Team/ABOUT ink kenarı, alt kenar = SEARCH alt çizgisi. Works'te kurumsal yeşil. */
+/* WORKS · MOODS ikonları (sol alt, SEARCH hizasında, pin). Varsayılan gizli; MOODS'a tıklanınca belirir. Etiket yalnızca ikon üstüne gelince yanında görünür. */
+#pmd{position:absolute;left:0;width:100%;height:0;top:var(--sh,100vh);pointer-events:none;opacity:0;visibility:hidden;transition:opacity .3s ease,visibility 0s linear .3s}
+#site.vw #pmd.on{opacity:1;visibility:visible;transition:opacity .3s ease,visibility 0s}
+.mdi{position:absolute;left:calc(var(--mx)*1cqw);bottom:var(--md-c,3cqw);transform:translateY(50%);display:block;color:var(--v-tc);pointer-events:auto;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none}
+.mdi svg{display:block;width:calc(var(--mw)*var(--v-md-u));height:auto;overflow:visible;fill:none;stroke:currentColor}
+.mdl{position:absolute;left:calc(100% + var(--v-md-gap));top:50%;transform:translateY(-50%);white-space:pre;font-size:max(11px,var(--v-tx-fs));line-height:1.2;letter-spacing:var(--v-tx-ls);opacity:0;pointer-events:none;transition:opacity .12s ease}
+.mdl span{display:inline-block}
+.mdi:hover .mdl,.mdi:focus-visible .mdl{opacity:1}
+#ptg{position:absolute;right:var(--tg-r,3.8cqw);width:0;height:0;top:var(--sh,100vh);pointer-events:none}
+#tg{position:absolute;right:0;bottom:var(--tg-b,3.8cqw);display:block;width:var(--v-tg-w);padding:0;margin:0;border:0;background:none;cursor:pointer;pointer-events:auto;--tg-c:var(--v-tg-c);--tg-s:var(--v-tg-sc);-webkit-tap-highlight-color:transparent}
+#site.vw #tg{--tg-c:var(--v-wk-glc)}
+#tg svg{display:block;width:100%;height:auto;overflow:visible}
+#tg .tg-on{display:none}#tg[aria-pressed=true] .tg-on{display:block}#tg[aria-pressed=true] .tg-off{display:none}
+#tg:focus-visible{outline:1px dashed currentColor;outline-offset:4px}
+#pct{position:absolute;left:0;width:100%;height:0;top:var(--sh,100vh)}
+#pct .fx.ct{left:var(--v-lb-x);bottom:var(--lb-b,3.8cqw);top:auto}
+#pcc{position:absolute;left:calc(var(--v-lb-x) + var(--v-lb-cw)/2);width:0;height:0;top:calc(var(--v-ly-top) + (100cqw - 2*(var(--v-ly-peek) + var(--v-ly-col)))/var(--v-ly-aspect) + var(--ct-lsb,0px))}
+#pin .fx{pointer-events:auto}
+#wbelow{position:relative;height:var(--v-wk-bh)}
+
+/* ===== WORKS ALT MENÜSÜ (WORKS'e ikinci tıklamada aşağı doğru açılır) ===== */
+.navw{position:relative}
+#wsub{position:absolute;left:0;top:100%;width:max-content;margin-top:var(--v-wk-sy);margin-left:var(--v-wk-sx);display:flex;flex-direction:column;align-items:flex-start;text-align:left;--wt:0%;gap:var(--v-wk-sgap);font-size:max(11px,var(--v-wk-sfs));z-index:6;
+ opacity:0;visibility:hidden;pointer-events:none;transform:translate(var(--wt),calc(-1*var(--v-wk-slide)));
+ transition:opacity .25s ease,transform .25s ease,visibility 0s linear .25s}
+#wsub.al-c{left:50%;--wt:-50%;align-items:center;text-align:center}
+#wsub.al-r{left:auto;right:0;--wt:0%;align-items:flex-end;text-align:right}
+#wsub.open{opacity:1;visibility:visible;pointer-events:auto;transform:translate(var(--wt),0);
+ transition:opacity calc(var(--v-wk-odur)*.6) ease,transform var(--v-wk-odur) cubic-bezier(.22,.61,.36,1),visibility 0s}
+.fx.sub{font-size:max(11px,var(--v-wk-sfs));transition:color .25s ease}
+/* Açılış: karışma yok; her alt başlık sırayla (--i) yumuşakça belirir */
+#wsub .fx.sub{opacity:0;translate:0 calc(var(--v-wk-slide)*-.5);transition:opacity .18s ease,translate .18s ease,color .25s ease}
+#wsub.open .fx.sub{opacity:1;translate:0 0;
+ transition:opacity calc(var(--v-wk-odur)*.8) ease calc(var(--i,0)*var(--v-wk-stg)),translate var(--v-wk-odur) cubic-bezier(.22,.61,.36,1) calc(var(--i,0)*var(--v-wk-stg)),color .25s ease}
+/* WORKS ile alt menü arasındaki boşlukta fare kaybolmasın (hover köprüsü) */
+#wsub::before{content:"";position:absolute;left:0;right:0;top:calc(-1*max(0px,var(--v-wk-sy)));height:max(0px,var(--v-wk-sy))}
+/* açılış sürerken alt başlıklar fareye tepki vermesin (kayarken yanlışlıkla karışmasın); açılış bitince etkinleşir */
+#wsub .fx.sub{pointer-events:none}
+#wsub.rdy .fx.sub{pointer-events:auto}
+.fx.sub:hover,.fx.sub:focus-visible,.fx.sub.on{color:var(--v-wk-c)}
+/* Works sayfasında footer'daki O ışığı yeşil */
+#page.vw #olight{--v-ol-c:var(--v-wk-olc)}
+
+/* ===== PANEL ===== */
+#ed{width:350px;flex:none;height:100vh;overflow:auto;background:#0c0c0e;border-left:1px solid var(--line);font-size:12px;color:#eee;font-family:Arial,Helvetica,sans-serif}
+body.closed #ed{display:none}
+body.client #ed,body.client #edTab{display:none!important}
+#edTab{position:fixed;right:0;top:50%;z-index:40;background:#0c0c0e;border:1px solid var(--line);border-right:0;padding:10px 8px;cursor:pointer;font-size:12px;writing-mode:vertical-rl;display:none;color:#eee}
+body.closed #edTab{display:none}
+.eh{display:flex;justify-content:space-between;align-items:center;padding:12px 14px;position:sticky;top:0;background:#0c0c0e;z-index:2;border-bottom:1px solid var(--line)}
+.eh button{background:none;border:0;cursor:pointer}
+.ea{display:flex;flex-wrap:wrap;gap:6px;padding:10px 14px;border-bottom:1px solid var(--line)}
+#ed button.b,.ea button,.vi button{background:none;border:1px solid var(--line);padding:6px 9px;cursor:pointer;font-size:12px}
+#ed button:hover,#ed button:focus-visible,#edTab:hover{background:#fff;color:#000;outline:none}
+#ed details.s{border-bottom:1px solid var(--line)}
+#ed summary{cursor:pointer;padding:12px 14px;font-weight:600;letter-spacing:.02em}
+.sb{padding:0 14px 14px}
+details.g{border:1px solid var(--line);margin:8px 0}
+details.g summary{padding:8px 10px;font-weight:500;color:var(--dim)}
+.gb{padding:0 10px 4px}
+.f{margin:0 0 9px}
+.f label{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--dim);margin-bottom:3px}
+.f input[type=range]{width:100%;accent-color:#fff}
+.f input.n{width:70px;background:#000;border:1px solid var(--line);padding:3px 5px;color:#fff}
+.f input[type=text],.f select{width:100%;background:#000;border:1px solid var(--line);padding:6px;color:#fff}
+.f input[type=color]{width:44px;height:24px;border:1px solid var(--line);background:none;padding:0}
+#ed button.b{display:block;width:100%;margin:0 0 6px}
+.note{color:var(--dim);margin:0 0 8px;line-height:1.4}
+.vi{border:1px solid var(--line);padding:8px;margin:0 0 8px}
+.vi.on{border-color:#fff}
+.vi .vh{display:flex;gap:8px;margin-bottom:6px;color:var(--dim);overflow:hidden;white-space:nowrap}
+.vi .vb{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.vi input,.sb>input{width:100%;background:#000;border:1px solid var(--line);padding:5px;color:#fff;margin-bottom:4px}
+.sb>input{padding:7px;margin-bottom:6px}
+.vi .note{margin:2px 0 0;font-size:11px}
+.f .hint{color:var(--dim);opacity:.75;font-size:11px;margin:1px 0 0}
+.f .u,.f .pt{color:var(--dim);font-size:11px;white-space:nowrap}
+.f .pt{color:#9ad}
+.f label .r{display:flex;align-items:center;gap:6px}
+.pnote{color:var(--dim);margin:0 0 10px;line-height:1.45;padding:8px 10px;border-left:2px solid var(--line);font-size:11.5px}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#fff;color:#000;padding:9px 16px;font-size:12px;z-index:60;opacity:0;pointer-events:none;transition:opacity .25s;font-family:Arial,sans-serif}
+#toast.on{opacity:1}
+@media(max-width:800px){#ed{position:fixed;right:0;top:0;width:min(350px,92vw);z-index:40}}

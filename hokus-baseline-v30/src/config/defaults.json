@@ -1,0 +1,17 @@
+{
+ "ver": 20,
+ "V": {
+  "nv.r": -2.15,
+  "ft.mo": 23,
+  "i.search.dy": -0.8,
+  "i.ig.dy": -0.6,
+  "i.vimeo.dy": -0.6,
+  "i.giphy.dy": -0.6,
+  "wk.mx": 4,
+  "rf.dur": 0.3,
+  "rf.lead": 0.12,
+  "rf.cps": 12,
+  "rf.rnd": 1,
+  "fx.leave": false
+ }
+}
